@@ -40,27 +40,24 @@ const App = () => {
       });
     }
 
-    peerConnection.current.addEventListener("icecandidate", (event) => {
+    peerConnection.current.onIceCandidate = (event) => {
       if (event.candidate) {
         socket.emit("sendICE", event.candidate);
       }
-    });
+    };
 
-    peerConnection.current.addEventListener(
-      "connectionstatechange",
-      (event) => {
-        if (peerConnection.connectionState === "connected") {
-          console.log("connected");
-        }
+    peerConnection.current.onConnectionStateChange = (event) => {
+      if (peerConnection.connectionState === "connected") {
+        console.log("connected");
       }
-    );
+    };
 
-    peerConnection.current.addEventListener("track", async (event) => {
+    peerConnection.current.onTrack = (event) => {
       if (remoteAudioRef.current) {
         const [remoteStream] = event.streams;
         remoteAudioRef.current.srcObject = remoteStream;
       }
-    });
+    };
 
     socket.on("getOffer", async (offer) => {
       if (role.current == "user") {
@@ -80,23 +77,6 @@ const App = () => {
     socket.on("getICE", async (candidate) => {
       await peerConnection.current.addIceCandidate(candidate);
     });
-
-    return () => {
-      peerConnection.current.removeEventListener("icecandidate", (event) => {
-        if (event.candidate) {
-          socket.emit("sendICE", event.candidate);
-        }
-      });
-
-      peerConnection.current.removeEventListener(
-        "connectionstatechange",
-        (event) => {
-          if (peerConnection.connectionState === "connected") {
-            console.log("connected");
-          }
-        }
-      );
-    };
   }, []);
   return (
     <div>
