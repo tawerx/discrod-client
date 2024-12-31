@@ -40,19 +40,19 @@ const App = () => {
       });
     }
 
-    peerConnection.current.onIceCandidate = (event) => {
+    peerConnection.current.onicecandidate = (event) => {
       if (event.candidate) {
         socket.emit("sendICE", event.candidate);
       }
     };
 
-    peerConnection.current.onConnectionStateChange = (event) => {
+    peerConnection.current.onconnectionstatechange = (event) => {
       if (peerConnection.connectionState === "connected") {
         console.log("connected");
       }
     };
 
-    peerConnection.current.onTrack = (event) => {
+    peerConnection.current.ontrack = (event) => {
       if (remoteAudioRef.current) {
         const [remoteStream] = event.streams;
         remoteAudioRef.current.srcObject = remoteStream;
